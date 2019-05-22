@@ -14,7 +14,7 @@ output:
 
 ## R Markdown
 
-Medindo a diversidade biologica - Ecologia de Campo - 2018
+Medindo a diversidade biologica - Ecologia de Campo - 
 
 # Nesse exemplo esatremos usando o trabalho de 
 Beca, G., et al. 2017. High mammal species turnover in forest patches immersed in biofuel plantations. Biological Conservation 210:352-359.
