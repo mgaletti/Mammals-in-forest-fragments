@@ -10,11 +10,15 @@ output:
 
 ```{r setup, include=FALSE}
 
+rm(list = ls())
+
+setwd("~/Dropbox/R Codes/Courses/R Courses/Ecologia de Campo/Landscape mammals")
+
 ```
 
 ## R Markdown
 
-Medindo a diversidade biologica - Ecologia de Campo - 
+Medindo a diversidade biologica - Ecologia de Campo - 2018
 
 # Nesse exemplo esatremos usando o trabalho de 
 Beca, G., et al. 2017. High mammal species turnover in forest patches immersed in biofuel plantations. Biological Conservation 210:352-359.
@@ -23,12 +27,9 @@ Primeiro vamos limpar o ambiente do R e instalar uns pacotes e buscar onde est??
 
 ```{r setup, include=FALSE}
 
-rm(list = ls())
-
 install.packages("vegan")
 library("vegan")
 
-setwd("~/Dropbox/R Codes/Ecologia de Campo/Landscape mammals")
 
 ```
 
@@ -45,6 +46,61 @@ names(beca)
 
 ```
 
+Do you want to see where are these fragments?
+Plot them on a map.
+
+``` {r pressure, echo=FALSE}
+
+library(ggplot2)
+library(ggmap)
+library(ggsn)
+library(maps)
+library(mapdata)
+library(ggrepel)
+
+area <- map_data("world", region="Brazil", zoom=5)
+head(area)
+head(beca)
+
+#Plote o mapa usando o ggplot2 como um objeto, ainda sem desenha-lo na tela
+g <- ggplot() + geom_polygon(data = area,
+                             aes(x=long, y = lat, group = group),
+                             fill = "lightgrey", color = "lightgrey") + #Note que voce pode mudar as cores do fundo e da borda
+  coord_fixed(1.1) + #Use isto para o mapa ficar proporcional
+  geom_polygon(data = area, 
+               aes(x = long, y = lat, group = group), 
+               color = "white", fill = NA, size = 0.04) + #Aqui voce pode escolher a cor das bordas e a espessura delas
+  
+  geom_point(data = beca, aes(x = long, y = lat), 
+             color = "purple", #Escolha a cor dos pontos
+             size = 2, #Tamanho dos pontos
+             alpha = 0.6) + #Transparencia: quanto mais proximo de 1, menos transparente
+  
+  geom_text_repel(data=beca, aes(x=long, y=lat, label=city))+ #Use isto para os rotulos dos pontos nao ficarem sobrepostos
+  
+  theme_bw() +
+  ggtitle("Forest fragments sampled by Beca et al.") + #De nome ao plot, caso seja necessario
+  #labs(x="Longitude", y = "Latitude") + #De nome aos eixos
+  
+  theme(text = element_text(size=14), #Ajuste os tamanhos das fontes 
+        plot.title = element_text(size=20, hjust=0.5),
+        axis.text.x = element_text(size = 10, angle=0, hjust=1),
+        axis.text.y = element_text(size = 10, angle=0, vjust=1),
+        axis.title.x = element_text(size = 12, angle=0),
+        axis.title.y = element_text(size = 12, angle=90))
+
+#Vizualize o mapa
+plot(g)
+
+
+
+
+
+```
+
+
+
+
 # Hip??teses
 Quais eram nossas hipoteses iniciais?
 Qual a relacao entre a diversidade de mamiferos (S) e o cobertura florestal (%)?
@@ -52,7 +108,7 @@ Atrav??s dos modelos de regress??o linear, vamos analisar graficamente se a cobe
 
 ```{r setup, include=FALSE}
 
-plot(beca$S~beca$Forest_cover, xlab="Cobertura %", 
+plot(beca$S~beca$forest_cover, xlab="Cobertura %", 
      ylab="Riqueza", pch=19)
 
 ```
@@ -63,11 +119,11 @@ Veja que parece que quando aumentamos a cobertura florestal aumenta a riqueza de
 
 ```{r setup, include=FALSE}
 
-modelo1 <- lm(beca$S~beca$Forest_cover)
+modelo1 <- lm(beca$S~beca$forest_cover)
 summary(modelo1)
 
 library(visreg)
-fit <- lm(S~Forest_cover,data=beca)
+fit <- lm(S~forest_cover,data=beca)
 visreg(fit)
 
 ```
@@ -76,9 +132,9 @@ Veja que a rela????o entre S e % de cobertura n??o ?? significativa (p-value=0.0
 
 ```{r setup, include=FALSE}
 
-plot(beca$SF~beca$Forest_cover, xlab="Cobertura %", 
+plot(beca$SF~beca$forest_cover, xlab="Cobertura %", 
      ylab="Riqueza", pch=19)
-modelo2 <- lm(beca$SF~beca$Forest_cover)
+modelo2 <- lm(beca$SF~beca$forest_cover)
 summary(modelo2)
 abline(modelo2)
 
